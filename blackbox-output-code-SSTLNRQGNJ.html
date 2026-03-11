@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StickyWorld | The Best Sticker Shop</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #292f36;
+            --light: #f7fff7;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        /* Filter Buttons */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--dark);
+            background: transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Product Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 4rem 1rem;
+        }
+
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .sticker-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .sticker-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .sticker-image {
+            height: 200px;
+            width: 100%;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+        }
+
+        .sticker-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .sticker-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-price {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .add-btn {
+            background-color: var(--dark);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background-color: var(--primary);
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 200;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-modal.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .close-cart {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .cart-total {
+            margin-top: auto;
+            border-top: 2px solid #eee;
+            padding-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .checkout-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 150;
+        }
+        .overlay.active { display: block; }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 300;
+        }
+        .notification.show { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">StickyWorld</div>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 Cart
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Stick it to the Man!</h1>
+        <p>Hand-drawn, high-quality vinyl stickers for your laptop, water bottle, and life.</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterStickers('all')">All</button>
+            <button class="filter-btn" onclick="filterStickers('animals')">Animals</button>
+            <button class="filter-btn" onclick="filterStickers('food')">Food</button>
+            <button class="filter-btn" onclick="filterStickers('abstract')">Abstract</button>
+            <button class="filter-btn" onclick="filterStickers('space')">Space</button>
+        </div>
+
+        <!-- Grid -->
+        <div class="sticker-grid" id="stickerGrid">
+            <!-- Stickers will be injected here by JS -->
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p style="text-align:center; color:#888;">Your cart is empty.</p>
+        </div>
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+        </div>
+        <button class="checkout-btn" onclick="alert('Proceeding to checkout!')">Checkout</button>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification" id="notification">Item added to cart!</div>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        // 1. Data: The Stickers
+        const stickers = [
+            { id: 1, name: "Cool Cat", category: "animals", price: 3.50, icon: "🐱" },
+            { id: 2, name: "Spicy Taco", category: "food", price: 2.99, icon: "🌮" },
+            { id: 3, name: "Galaxy Brain", category: "abstract", price: 4.00, icon: "🧠" },
+            { id: 4, name: "Rocket Ship", category: "space", price: 3.75, icon: "🚀" },
+            { id: 5, name: "Sushi Roll", category: "food", price: 2.50, icon: "🍣" },
+            { id: 6, name: "Alien", category: "space", price: 4.50, icon: "👽" },
+            { id: 7, name: "Grumpy Dog", category: "animals", price: 3.00, icon: "🐶" },
+            { id: 8, name: "Neon Heart", category: "abstract", price: 2.00, icon: "❤️" },
+            { id: 9, name: "Pizza Slice", category: "food", price: 2.99, icon: "🍕" },
+            { id: 10, name: "Moon", category: "space", price: 3.25, icon: "🌙" },
+            { id: 11, name: "Panda", category: "animals", price: 3.50, icon: "🐼" },
+            { id: 12, name: "Geometric", category: "abstract", price: 2.75, icon: "🔺" }
+        ];
+
+        let cart = [];
+
+        // 2. Render Stickers
+        const grid = document.getElementById('stickerGrid');
+
+        function renderStickers(filter = 'all') {
+            grid.innerHTML = ''; // Clear current grid
+
+            const filteredStickers = filter === 'all' 
+                ? stickers 
+                : stickers.filter(s => s.category === filter);
+
+            filteredStickers.forEach(sticker => {
+                const card = document.createElement('div');
+                card.className = 'sticker-card';
+                card.innerHTML = `
+                    <div class="sticker-image" style="background-color: ${getRandomColor()}">
+                        ${sticker.icon}
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">${sticker.name}</h3>
+                        <span class="sticker-price">$${sticker.price.toFixed(2)}</span>
+                        <button class="add-btn" onclick="addToCart(${sticker.id})">Add to Cart</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Helper to give random pastel background colors
+        function getRandomColor() {
+            const colors = ['#FFD1DC', '#C1E1C1', '#AEC6CF', '#FDFD96', '#FFB347'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // 3. Filtering Logic
+        function filterStickers(category) {
+            // Update active button style
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderStickers(category);
+        }
+
+        // 4. Cart Logic
+        function addToCart(id) {
+            const item = stickers.find(s => s.id === id);
+            cart.push(item);
+            updateCartUI();
+            showNotification(`Added ${item.name} to cart!`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+
+            // Update Badge
+            cartCount.innerText = cart.length;
+
+            // Update List
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align:center; color:#888;">Your cart is empty.</p>';
+            } else {
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
